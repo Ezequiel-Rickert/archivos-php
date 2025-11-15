@@ -1,5 +1,8 @@
 <?php
-// login_paciente.php
+// Evitar warnings/notices y limpiar buffer
+error_reporting(0);
+ini_set('display_errors', 0);
+ob_start();
 
 header('Content-Type: application/json'); // importante para JSON
 
@@ -15,6 +18,7 @@ $mysqli = new mysqli($host, $user, $pass, $dbname, $port);
 
 // Verificar conexión
 if ($mysqli->connect_errno) {
+    ob_clean();
     echo json_encode(["success" => false, "error" => "Error de conexión"]);
     exit();
 }
@@ -24,9 +28,8 @@ if (isset($_POST['usuario']) && isset($_POST['password'])) {
     $usuario = $_POST['usuario'];
     $password = $_POST['password'];
 
-    // Consulta segura usando prepared statements
-    $stmt = $mysqli->prepare("SELECT password FROM paciente WHERE nombre_usuario = ? OR email = ?");
-    $stmt->bind_param("ss", $usuario, $usuario); // Se puede ingresar usuario o email
+    $stmt = $mysqli->prepare("SELECT password FROM pacientes WHERE nombre_usuario = ? OR email = ?");
+    $stmt->bind_param("ss", $usuario, $usuario);
     $stmt->execute();
     $stmt->store_result();
 
@@ -34,20 +37,24 @@ if (isset($_POST['usuario']) && isset($_POST['password'])) {
         $stmt->bind_result($hashed_password);
         $stmt->fetch();
 
-        // Verificar contraseña
-        if ($password === $hashed_password) { // O password_verify si el password está hasheado
+        if ($password === $hashed_password) { // o password_verify si está hasheado
+            ob_clean();
             echo json_encode(["success" => true]);
         } else {
+            ob_clean();
             echo json_encode(["success" => false, "error" => "Contraseña incorrecta"]);
         }
     } else {
+        ob_clean();
         echo json_encode(["success" => false, "error" => "Usuario no encontrado"]);
     }
 
     $stmt->close();
 } else {
+    ob_clean();
     echo json_encode(["success" => false, "error" => "Faltan parámetros"]);
 }
 
 $mysqli->close();
+ob_end_flush();
 ?>
