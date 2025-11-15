@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli("hostname", "username", "password", "dbname");
+$conn = new mysqli("sql5.freesqldatabase.com", "sql5807844", "GHd3xHcTLM", "sql5807844");
 if ($conn->connect_error) { die("Conexión fallida: " . $conn->connect_error); }
 
 $email = $_POST['email'];
