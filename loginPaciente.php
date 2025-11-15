@@ -1,6 +1,8 @@
 <?php
 // login_paciente.php
 
+header('Content-Type: application/json'); // importante para JSON
+
 // Configuración de la base de datos
 $host = "sql5.freesqldatabase.com";
 $dbname = "sql5807844";
@@ -13,7 +15,7 @@ $mysqli = new mysqli($host, $user, $pass, $dbname, $port);
 
 // Verificar conexión
 if ($mysqli->connect_errno) {
-    echo "error";
+    echo json_encode(["success" => false, "error" => "Error de conexión"]);
     exit();
 }
 
@@ -33,18 +35,18 @@ if (isset($_POST['usuario']) && isset($_POST['password'])) {
         $stmt->fetch();
 
         // Verificar contraseña
-        if ($password === $hashed_password) { // Cambiar a password_verify si usás hash
-            echo "success";
+        if ($password === $hashed_password) { // O password_verify si el password está hasheado
+            echo json_encode(["success" => true]);
         } else {
-            echo "failure";
+            echo json_encode(["success" => false, "error" => "Contraseña incorrecta"]);
         }
     } else {
-        echo "failure";
+        echo json_encode(["success" => false, "error" => "Usuario no encontrado"]);
     }
 
     $stmt->close();
 } else {
-    echo "failure";
+    echo json_encode(["success" => false, "error" => "Faltan parámetros"]);
 }
 
 $mysqli->close();
