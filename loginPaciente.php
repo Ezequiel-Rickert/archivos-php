@@ -25,14 +25,14 @@ if (isset($_POST['usuario']) && isset($_POST['password'])) {
     $password = $_POST['password'];
 
     // Consulta segura usando prepared statements
-    $stmt = $mysqli->prepare("SELECT password FROM pacientes WHERE nombre_usuario = ? OR email = ?");
+    $stmt = $mysqli->prepare("SELECT password FROM pacientes WHERE usuario = ?");
     
     if (!$stmt) {
         echo json_encode(["success" => false, "error" => "Error en la consulta: " . $mysqli->error]);
         exit();
     }
 
-    $stmt->bind_param("ss", $usuario, $usuario); // Se puede ingresar usuario o email
+    $stmt->bind_param("s", $usuario);
     $stmt->execute();
     $stmt->store_result();
 
